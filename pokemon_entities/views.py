@@ -64,24 +64,51 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    with open('pokemon_entities/pokemons.json', encoding='utf-8') as database:
-        pokemons = json.load(database)['pokemons']
-
+    pokemons = Pokemon.objects.all()
     for pokemon in pokemons:
-        if pokemon['pokemon_id'] == int(pokemon_id):
+        if pokemon.id == int(pokemon_id):
             requested_pokemon = pokemon
             break
     else:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
+    requested_pokemon_entities = PokemonEntity.objects.filter(
+        pokemon=requested_pokemon)
+    print('REQUSTED POKEMONS', len(requested_pokemon_entities))
+    
+    pokemon_with_entities = {
+        "pokemon_id": requested_pokemon.id,
+        "title_ru": requested_pokemon.title,
+        "title_en": "-",
+        "title_jp": "-",
+        "description": "-",
+        "entities": [
+            {
+                "level": entity.level,
+                "lat": entity.latitude,
+                "lon": entity.longitude,
+            } for entity in requested_pokemon_entities
+        ],
+        # "next_evolution": {
+        #     "title_ru": "Ивизавр",
+        #     "pokemon_id": 2,
+        #     "img_url": "https://vignette.wikia.nocookie.net/pokemon/images/7/73/002Ivysaur.png/revision/latest/scale-to-width-down/200?cb=20150703180624&path-prefix=ru"
+        # }
+    }
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in requested_pokemon['entities']:
+
+    if not requested_pokemon.photo:
+        return render(request, 'pokemon.html', context={
+        'map': folium_map._repr_html_(), 'pokemon': pokemon_with_entities
+    })
+    pokemon_with_entities["img_url"] = request.build_absolute_uri(requested_pokemon.photo.url)
+    for pokemon_entity in pokemon_with_entities['entities']:
         add_pokemon(
             folium_map, pokemon_entity['lat'],
             pokemon_entity['lon'],
-            pokemon['img_url']
+            pokemon_with_entities["img_url"]
         )
 
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemon
+        'map': folium_map._repr_html_(), 'pokemon': pokemon_with_entities
     })
