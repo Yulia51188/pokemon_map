@@ -74,7 +74,6 @@ def show_pokemon(request, pokemon_id):
 
     requested_pokemon_entities = PokemonEntity.objects.filter(
         pokemon=requested_pokemon)
-    print('REQUSTED POKEMONS', len(requested_pokemon_entities))
     
     pokemon_with_entities = {
         "pokemon_id": requested_pokemon.id,
