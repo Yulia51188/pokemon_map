@@ -87,20 +87,31 @@ def show_pokemon(request, pokemon_id):
                 "lat": entity.latitude,
                 "lon": entity.longitude,
             } for entity in requested_pokemon_entities
-        ],
-        # "next_evolution": {
-        #     "title_ru": "Ивизавр",
-        #     "pokemon_id": 2,
-        #     "img_url": "https://vignette.wikia.nocookie.net/pokemon/images/7/73/002Ivysaur.png/revision/latest/scale-to-width-down/200?cb=20150703180624&path-prefix=ru"
-        # }
+        ]
     }
+    if requested_pokemon.previous_evolution:
+        pokemon_with_entities["previous_evolution"] = {
+            "title_ru": requested_pokemon.previous_evolution.title,
+            "pokemon_id": requested_pokemon.previous_evolution.id,
+            "img_url": request.build_absolute_uri(
+                requested_pokemon.previous_evolution.photo.url)
+        }
+    next_evolutions = requested_pokemon.next_evolutions.all()
+    if next_evolutions:
+        pokemon_with_entities["next_evolution"] = {
+            "title_ru": next_evolutions[0].title,
+            "pokemon_id": next_evolutions[0].id,
+            "img_url": request.build_absolute_uri(next_evolutions[0].photo.url)
+        }
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
 
     if not requested_pokemon.photo:
         return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemon_with_entities
-    })
-    pokemon_with_entities["img_url"] = request.build_absolute_uri(requested_pokemon.photo.url)
+            'map': folium_map._repr_html_(), 'pokemon': pokemon_with_entities
+        })
+        
+    pokemon_with_entities["img_url"] = request.build_absolute_uri(
+        requested_pokemon.photo.url)
     for pokemon_entity in pokemon_with_entities['entities']:
         add_pokemon(
             folium_map, pokemon_entity['lat'],
