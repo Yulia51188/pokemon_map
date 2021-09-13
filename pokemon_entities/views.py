@@ -79,9 +79,9 @@ def show_pokemon(request, pokemon_id):
     pokemon_with_entities = {
         "pokemon_id": requested_pokemon.id,
         "title_ru": requested_pokemon.title,
-        "title_en": "-",
-        "title_jp": "-",
-        "description": "-",
+        "title_en": requested_pokemon.title_en,
+        "title_jp": requested_pokemon.title_jp,
+        "description": requested_pokemon.description,
         "entities": [
             {
                 "level": entity.level,
