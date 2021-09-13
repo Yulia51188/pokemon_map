@@ -4,7 +4,11 @@ from django.db import models
 class Pokemon(models.Model):
     title = models.CharField(max_length=50)
     photo = models.ImageField(upload_to='images', blank=True)
-    
+    description = models.TextField(blank=True,
+        default='описание скоро появится')
+    title_en = models.CharField(max_length=50, default='-')
+    title_jp = models.CharField(max_length=50, default='-')
+
     def __str__(self):
         return f'Покемон {self.title}'
 
