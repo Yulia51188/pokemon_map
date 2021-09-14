@@ -75,32 +75,32 @@ def show_pokemon(request, pokemon_id):
         pokemon=requested_pokemon)
     
     pokemon_with_entities = {
-        "pokemon_id": requested_pokemon.id,
-        "title_ru": requested_pokemon.title,
-        "title_en": requested_pokemon.title_en,
-        "title_jp": requested_pokemon.title_jp,
-        "description": requested_pokemon.description,
-        "entities": [
+        'pokemon_id': requested_pokemon.id,
+        'title_ru': requested_pokemon.title,
+        'title_en': requested_pokemon.title_en,
+        'title_jp': requested_pokemon.title_jp,
+        'description': requested_pokemon.description,
+        'entities': [
             {
-                "level": entity.level,
-                "lat": entity.latitude,
-                "lon": entity.longitude,
+                'level': entity.level,
+                'lat': entity.latitude,
+                'lon': entity.longitude,
             } for entity in requested_pokemon_entities
         ]
     }
     if requested_pokemon.previous_evolution:
-        pokemon_with_entities["previous_evolution"] = {
-            "title_ru": requested_pokemon.previous_evolution.title,
-            "pokemon_id": requested_pokemon.previous_evolution.id,
-            "img_url": request.build_absolute_uri(
+        pokemon_with_entities['previous_evolution'] = {
+            'title_ru': requested_pokemon.previous_evolution.title,
+            'pokemon_id': requested_pokemon.previous_evolution.id,
+            'img_url': request.build_absolute_uri(
                 requested_pokemon.previous_evolution.photo.url)
         }
     next_evolutions = requested_pokemon.next_evolutions.all()
     if next_evolutions:
-        pokemon_with_entities["next_evolution"] = {
-            "title_ru": next_evolutions[0].title,
-            "pokemon_id": next_evolutions[0].id,
-            "img_url": request.build_absolute_uri(next_evolutions[0].photo.url)
+        pokemon_with_entities['next_evolution'] = {
+            'title_ru': next_evolutions[0].title,
+            'pokemon_id': next_evolutions[0].id,
+            'img_url': request.build_absolute_uri(next_evolutions[0].photo.url)
         }
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
 
@@ -109,13 +109,13 @@ def show_pokemon(request, pokemon_id):
             'map': folium_map._repr_html_(), 'pokemon': pokemon_with_entities
         })
         
-    pokemon_with_entities["img_url"] = request.build_absolute_uri(
+    pokemon_with_entities['img_url'] = request.build_absolute_uri(
         requested_pokemon.photo.url)
     for pokemon_entity in pokemon_with_entities['entities']:
         add_pokemon(
             folium_map, pokemon_entity['lat'],
             pokemon_entity['lon'],
-            pokemon_with_entities["img_url"]
+            pokemon_with_entities['img_url']
         )
 
     return render(request, 'pokemon.html', context={
