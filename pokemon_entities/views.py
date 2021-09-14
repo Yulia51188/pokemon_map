@@ -1,7 +1,6 @@
 import folium
 
-from django.http import HttpResponseNotFound, HttpRequest
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from .models import PokemonEntity, Pokemon
 
@@ -63,17 +62,10 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    pokemons = Pokemon.objects.all()
-    for pokemon in pokemons:
-        if pokemon.id == int(pokemon_id):
-            requested_pokemon = pokemon
-            break
-    else:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
-    requested_pokemon_entities = PokemonEntity.objects.filter(
-        pokemon=requested_pokemon)
-    
+    requested_pokemon = get_object_or_404(Pokemon, pk=pokemon_id)
+    requested_pokemon_entities = requested_pokemon.pokemon_entities.all()
+
     pokemon_with_entities = {
         'pokemon_id': requested_pokemon.id,
         'title_ru': requested_pokemon.title,
