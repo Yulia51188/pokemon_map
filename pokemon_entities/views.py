@@ -1,5 +1,4 @@
 import folium
-import json
 
 from django.http import HttpResponseNotFound, HttpRequest
 from django.shortcuts import render
